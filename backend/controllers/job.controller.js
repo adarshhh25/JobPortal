@@ -33,33 +33,93 @@ export const postJob = async (req, res) => {
         console.log(error);
     }
 }
-// student k liye
+// student ke liye
+// export const getAllJobs = async (req, res) => {
+//     try {
+//         // const keyword = req.query.keyword || "";
+//         // const query = {
+//         //     $or: [
+//         //         { title: { $regex: keyword, $options: "i" } },
+//         //         { description: { $regex: keyword, $options: "i" } },
+//         //     ]
+//         // };
+
+//          const title = Array.isArray(req.query.title)
+//             ? req.query.title[0]
+//             : req.query.title || "";
+
+//             const location = Array.isArray(req.query.location)
+//             ? req.query.location[0]
+//             : req.query.location || "";
+
+//             const query = await Job.find({
+//             title: { $regex: title, $options: "i" },
+//             location: { $regex: location, $options: "i" },
+//             });
+
+
+//         const jobs = await Job.find(query).populate({
+//             path: "company"
+//         }).sort({ createdAt: -1 });
+//         if (!jobs) {
+//             return res.status(404).json({
+//                 message: "Jobs not found.",
+//                 success: false
+//             })
+//         };
+//         return res.status(200).json({
+//             jobs,
+//             success: true
+//         })
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 export const getAllJobs = async (req, res) => {
-    try {
-        const keyword = req.query.keyword || "";
-        const query = {
-            $or: [
-                { title: { $regex: keyword, $options: "i" } },
-                { description: { $regex: keyword, $options: "i" } },
-            ]
-        };
-        const jobs = await Job.find(query).populate({
-            path: "company"
-        }).sort({ createdAt: -1 });
-        if (!jobs) {
-            return res.status(404).json({
-                message: "Jobs not found.",
-                success: false
-            })
-        };
-        return res.status(200).json({
-            jobs,
-            success: true
-        })
-    } catch (error) {
-        console.log(error);
+  try {
+    // Extract query params safely (handle arrays from frontend filters)
+    const title = Array.isArray(req.query.title)
+      ? req.query.title[0]
+      : req.query.title || "";
+
+    const location = Array.isArray(req.query.location)
+      ? req.query.location[0]
+      : req.query.location || "";
+
+    // Build MongoDB query dynamically
+    const query = {
+      title: { $regex: title, $options: "i" },
+      location: { $regex: location, $options: "i" },
+    };
+
+    // Fetch jobs directly
+    const jobs = await Job.find(query)
+      .populate("company")
+      .sort({ createdAt: -1 });
+
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({
+        message: "No jobs found.",
+        success: false,
+      });
     }
-}
+
+    return res.status(200).json({
+      jobs,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in getAllJobs:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
 // student
 export const getJobById = async (req, res) => {
     try {

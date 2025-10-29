@@ -4,8 +4,7 @@ import FilterCard from './FilterCard'
 import Job from './Job';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-
-// const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
+import Footer from './shared/Footer';
 
 const Jobs = () => {
     const { allJobs, searchedQuery } = useSelector(store => store.job);
@@ -54,8 +53,7 @@ const Jobs = () => {
                     }
                 </div>
             </div>
-
-
+           <Footer/>
         </div>
     )
 }
